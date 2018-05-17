@@ -1,0 +1,69 @@
+<html>
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+
+</head>
+
+<body>
+<div id="app">
+<!--{{foo}}-->
+    <test-root ref="child"></test-root>
+    <base-input ref="baseInput"></base-input>
+</div>
+</body>
+</html>
+
+<script>
+    // $refs 只会在组件渲染完成之后生效，并且它们不是响应式的。这只意味着一个直接的子组件封装的“逃生舱”——你应该避免在模板或计算属性中访问 $refs。
+
+    Vue.component('test-root',{
+       template:'<p>{{this.$parent.foo}}<child-child></child-child></p>',
+        data:function () {
+            return{
+                parent:this.$parent
+            }
+        }
+    });
+
+
+    Vue.component('base-input',{
+       template:'<input ref="input" placeholder="base-input">',
+        methods:{
+            focus: function () {
+                this.$refs.input.focus()
+            }
+        }
+    });
+
+    Vue.component('child-child',{
+       template:'<span>{{provide}}</span>',
+        inject:[
+            'provide'
+        ]
+    });
+    // Vue 根实例
+    app = new Vue({
+        el:'#app',
+        data: {
+            foo: 'I from rootf'
+        },
+        computed: {
+            bar: function () { /* ... */ }
+        },
+        methods: {
+            baz: function () { /* ... */ },
+            // focus:function () {
+            //     this.$refs.input.focus()
+            // }
+        },
+        provide:function (){
+            return {
+                provide:'I am provide'
+            }
+        }
+    })
+
+    console.log(app.$refs.child.root);//访问父实例
+
+    app.$refs.baseInput.focus();
+</script>
